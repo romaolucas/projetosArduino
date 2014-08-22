@@ -1,9 +1,9 @@
 
 void testaLeds(int tempo);
-void ascendeLed(int x, int y);
+void acendeLed(int x, int y);
 void apagaLed(int x, int y);
 void zeraTabuleiro();
-void toogle(int x, int y);
+void toggle(int x, int y);
 void desenhaTabuleiro(int tempo, int  posX, int posY);
 boolean estaCompleto();
 void sorteiaTabuleiro();
@@ -14,6 +14,8 @@ int posicaox = 0;
 int posicaoy = 0; 
 int tabuleiro[6][6];
 boolean apertado = false;
+double low = 0.05;
+double high = 0.20;
 
 void setup() {
 
@@ -34,7 +36,7 @@ void loop(){
     int esquerda = analogRead(A1);
     int cima = analogRead(A2); 
     int baixo = analogRead(A3);
-    int toogleIt = analogRead(A4);
+    int toggleIt = analogRead(A4);
     
     if(!apertado && direita >= 600) {
       posicaox = posicaox + 1; 
@@ -71,20 +73,31 @@ void loop(){
       posicaoy = 5;
     }
     
-      if(!apertado && toogleIt > 600) {
-      toogle(posicaox,posicaoy); 
+      if(!apertado && toggleIt > 600) {
+      toggle(posicaox,posicaoy); 
       apertado = true;
     }
-    if(baixo < 600 && cima < 600 && esquerda < 600 && direita < 600 && toogleIt < 600)
+    if(baixo < 600 && cima < 600 && esquerda < 600 && direita < 600 && toggleIt < 600)
         apertado = false;
         
     desenhaTabuleiro(3,posicaox,posicaoy);
+  }
+  else {
+    zeraTabuleiro();
+    /*Dj, como diabos funciona a sua funcao desenhaTabuleiro*/
+    tabuleiro[1][1] = tabuleiro[1][4] = tabuleiro[2][0] = tabuleiro[2][2] = tabuleiro[2][3] = tabuleiro[2][5] =
+      tabuleiro[3][0] = tabuleiro[3][2] = tabuleiro[3][3] = tabuleiro[3][5] = tabuleiro[4][1] = tabuleiro[4][4] = 1;
+    desenhaTabuleiro(3, 0, 0);
+    delay(5000);
+    zeraTabuleiro();
+    testaLeds(200);
+    sorteiaTabuleiro();
   }
 }
 
 
 
-void ascendeLed(int x, int y) {
+void acendeLed(int x, int y) {
   digitalWrite(x,HIGH);
   digitalWrite(y + 6,LOW);
 }
@@ -97,7 +110,7 @@ void apagaLed(int x, int y) {
 void testaLeds(int tempo) {
   for(int x = 0; x <=5; x++)
     for(int y = 0; y <=5; y++) {
-      ascendeLed(x,y);
+      acendeLed(x,y);
       delay(tempo);
       apagaLed(x,y);
     }
@@ -109,7 +122,7 @@ void zeraTabuleiro() {
       tabuleiro[i][j] = 0;
 }
 
-void toogle(int x, int y) {
+void toggle(int x, int y) {
     if(tabuleiro[x][y] == 0)
         tabuleiro[x][y] = 1;
     else
@@ -174,12 +187,24 @@ boolean estaCompleto() {
   for (int i = 0; i < 6; i++)
      for (int j = 0; j < 6; j++)
         if (tabuleiro[i][j]) return false;
+  if (low == 0.05) {
+    low = 0.25;
+    high = 0.50;
+  }
+  else if (low == 0.25) {
+    low = 0.55;
+    high = 0.85; 
+  }
+  else {
+    low = 0.65;
+    high = 0.9;
+  }
   return true; 
 }
 
 void sorteiaTabuleiro() {
   randomSeed(analogRead(A5));
-  long nLuzes = random(0.55*36, 0.85*36); 
+  long nLuzes = random(low*36, high*36); 
   for (; nLuzes > 0; nLuzes--)
-    toogle(random(0, 6), random(0, 6));
+    toggle(random(0, 6), random(0, 6));
 }
