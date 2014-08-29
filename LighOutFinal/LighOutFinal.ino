@@ -26,6 +26,10 @@ void setup() {
   for(int i = 6; i <= 11; i++)
     digitalWrite(i,HIGH);
   zeraTabuleiro();
+    tabuleiro[1][1] = tabuleiro[1][4] = tabuleiro[2][0] = tabuleiro[2][2] = tabuleiro[2][3] = tabuleiro[2][5] =
+      tabuleiro[3][0] = tabuleiro[3][2] = tabuleiro[3][3] = tabuleiro[3][5] = tabuleiro[4][1] = tabuleiro[4][4] = 1;
+    desenhaTabuleiro(300, 0, 0);
+    zeraTabuleiro();
   testaLeds(200);
   sorteiaTabuleiro();
 }
@@ -83,12 +87,14 @@ void loop(){
     desenhaTabuleiro(3,posicaox,posicaoy);
   }
   else {
+    apertado = false;
     zeraTabuleiro();
-    /*Dj, como diabos funciona a sua funcao desenhaTabuleiro*/
     tabuleiro[1][1] = tabuleiro[1][4] = tabuleiro[2][0] = tabuleiro[2][2] = tabuleiro[2][3] = tabuleiro[2][5] =
       tabuleiro[3][0] = tabuleiro[3][2] = tabuleiro[3][3] = tabuleiro[3][5] = tabuleiro[4][1] = tabuleiro[4][4] = 1;
-    desenhaTabuleiro(3, 0, 0);
-    delay(5000);
+    while (!apertado && analogRead(A4) <= 600) {
+      desenhaTabuleiro(3, 0, 0);
+      if (analogRead(A4) > 600) apertado = true;
+    }
     zeraTabuleiro();
     testaLeds(200);
     sorteiaTabuleiro();
