@@ -1,7 +1,7 @@
 #define FOWARD LOW
 #define BACKWARD HIGH
 
-#define MAX_HEAD_POS 160
+#define MAX_HEAD_POS 80
 
 int step_pin = 2;    /* this pin used for steps */
 int dir_pin = 3;     /* this pin is used for direction */
@@ -26,8 +26,7 @@ void setup() {
 }
 
 void loop() {    
-    //floppy_tone(1000, 100);
-    delay(100);
+    floppy_tone(1200, 100);
 }
 
 void toggle_dir() {
@@ -59,14 +58,14 @@ void floppy_tone(int frequency, long time) {
     long delay_amount = (long)(1000000 / frequency);             /* gap between the floppy ticks */
     long loop_time = (long)((time*1000)/(delay_amount*2));       /* times to tick */
     for (x = 0; x < loop_time; x++) { 
-        Serial.println(head_position);
-        if (head_position >= MAX_HEAD_POS || head_position <= 0) 
+        if ((head_position <= 0 && dir == BACKWARD) ||(head_position >= MAX_HEAD_POS && dir == FOWARD)) 
             toggle_dir();
         floppy_tick(delay_amount);
     }
 }
 
 void floppy_tick(int delay_amount) {
+    Serial.println(delay_amount);
     digitalWrite(step_pin, HIGH);
     delayMicroseconds(delay_amount);
     digitalWrite(step_pin, LOW);
